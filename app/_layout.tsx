@@ -7,6 +7,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { ping, useUser } from '../hooks/firebase';
 import { MD3Theme, PaperProvider, MD3LightTheme } from 'react-native-paper'
+import { View } from 'react-native'
 
 Splash.preventAutoHideAsync();
 enableScreens(true);
@@ -43,6 +44,13 @@ export default function() {
         detachInactiveScreens
         screenOptions={{
           headerShown: false,
+          tabBarStyle: {
+            backgroundColor: theme.colors.primary,
+            paddingBottom: 4,
+            paddingTop: 4,
+          },
+          tabBarActiveTintColor: theme.colors.onPrimary,
+          tabBarInactiveTintColor: '#5f0909',
         }}
       >
         <Tabs.Screen
