@@ -1,5 +1,6 @@
-import { useMemo } from 'react';
-import { StyleProp, Text, TextStyle } from 'react-native'
+import { useMemo } from 'react'
+import { StyleProp, TextStyle } from 'react-native'
+import { Text, TextProps } from 'react-native-paper'
 
 export interface LionTextProps {
   children?: string;

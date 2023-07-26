@@ -6,9 +6,20 @@ import React from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { ping, useUser } from '../hooks/firebase';
+import { MD3Theme, PaperProvider, MD3LightTheme } from 'react-native-paper'
 
 Splash.preventAutoHideAsync();
 enableScreens(true);
+
+const theme: MD3Theme = {
+  ...MD3LightTheme,
+  colors: {
+    ...MD3LightTheme.colors,
+    background: '#f3f410',
+    primary: '#C53636',
+    onPrimary: '#f3f410',
+  },
+}
 
 export default function() {
   const [isAppReady, setAppReady] = React.useState(true); // nothing to load yet
@@ -25,6 +36,7 @@ export default function() {
 
   if (!user || !isAppReady) return null;
   return (
+    <PaperProvider theme={theme}>
     <SafeAreaProvider>
       <StatusBar style="light" />
       <Tabs
@@ -59,5 +71,6 @@ export default function() {
         />
       </Tabs>
     </SafeAreaProvider>
+    </PaperProvider>
   );
 }

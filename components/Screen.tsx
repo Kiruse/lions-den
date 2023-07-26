@@ -5,6 +5,7 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { LionTitle } from "./LionText";
 import { Stack } from "expo-router";
 import { css } from "@emotion/native";
+import { useTheme } from "react-native-paper";
 
 export interface ScreenProps {
   children?: ReactNode;
@@ -14,20 +15,21 @@ export interface ScreenProps {
 }
 
 export default function Screen({ children, title, StickyHeaderComponent, style }: ScreenProps) {
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const topInset = insets.top + 2;
-  
+
   // Jotai uses Suspense, so we wrap the whole screen in it
   return (
     <Suspense fallback={<LoadingScreen />}>
-    <SafeAreaView edges={['left', 'right']} style={styles.superContainer}>
+    <SafeAreaView edges={['left', 'right']} style={[styles.superContainer, { backgroundColor: theme.colors.background }]}>
       {typeof title === 'string' ? (
         <LionTitle
           bold
           textAlign="center"
           color="white"
           style={css`
-            background-color: black;
+            background-color: ${theme.colors.onBackground};
             padding: 8px 4px;
             padding-top: ${topInset+''}px;
             margin: 0;
@@ -63,7 +65,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'stretch',
-    backgroundColor: '#f3f410',
   },
   loading: {
     flex: 1,
@@ -76,10 +77,5 @@ const styles = StyleSheet.create({
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-  },
-  header: {
-    paddingVertical: 8,
-    paddingHorizontal: 4,
-    backgroundColor: 'black',
   },
 });

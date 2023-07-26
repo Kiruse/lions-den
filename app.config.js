@@ -1,6 +1,7 @@
 const config = {
   plugins: [
     'expo-router',
+    'expo-updates',
   ],
   expo: {
     name: "Lions' Den",
