@@ -1,3 +1,4 @@
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
 import { Tabs } from 'expo-router'
 import * as Splash from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
@@ -34,15 +35,27 @@ export default function() {
       >
         <Tabs.Screen
           name="index"
-          options={{ href: '/', title: 'Home' }}
+          options={{
+            href: '/',
+            title: 'Home',
+            tabBarIcon: props => <Ionicons name="home-outline" {...props} />,
+          }}
         />
         <Tabs.Screen
           name="proposals"
-          options={{ href: '/proposals', title: 'Props' }}
+          options={{
+            href: '/proposals',
+            title: 'Props',
+            tabBarIcon: props => <MaterialCommunityIcons name="poll" {...props} />,
+          }}
         />
         <Tabs.Screen
           name="settings"
-          options={{ href: '/settings', title: 'Settings' }}
+          options={{
+            href: '/settings',
+            title: 'Settings',
+            tabBarIcon: props => <Ionicons name="settings-outline" {...props} />,
+          }}
         />
       </Tabs>
     </SafeAreaProvider>
