@@ -1,28 +1,25 @@
-import { ComponentType, ReactNode, Suspense, useMemo } from "react";
-import { ActivityIndicator, StyleProp, StyleSheet, View, ViewStyle } from "react-native"
-import { ScrollView } from "react-native-gesture-handler";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
-import { LionTitle } from "./LionText";
-import { Stack } from "expo-router";
-import { css } from "@emotion/native";
-import { useTheme } from "react-native-paper";
+import { css } from '@emotion/native'
+import { ComponentType, ReactNode, Suspense } from 'react'
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native'
+import { ActivityIndicator, useTheme } from 'react-native-paper'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
+import { LionTitle } from './LionText'
 
 export interface ScreenProps {
   children?: ReactNode;
   title?: ReactNode;
-  StickyHeaderComponent?: ComponentType;
   style?: StyleProp<ViewStyle>;
 }
 
-export default function Screen({ children, title, StickyHeaderComponent, style }: ScreenProps) {
+export default function Screen({ children, title, style }: ScreenProps) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const topInset = insets.top + 2;
 
   // Jotai uses Suspense, so we wrap the whole screen in it
   return (
-    <Suspense fallback={<LoadingScreen />}>
     <SafeAreaView edges={['left', 'right']} style={[styles.superContainer, { backgroundColor: theme.colors.background }]}>
+    <Suspense fallback={<LoadingScreen />}>
       {typeof title === 'string' ? (
         <LionTitle
           bold
@@ -40,21 +37,19 @@ export default function Screen({ children, title, StickyHeaderComponent, style }
       ) : (
         title
       )}
-      <ScrollView
-        StickyHeaderComponent={StickyHeaderComponent}
-        style={[styles.container, style]}
-      >
+      <View style={[styles.container, style]}>
         {children}
-      </ScrollView>
-    </SafeAreaView>
+      </View>
     </Suspense>
+    </SafeAreaView>
   )
 }
 
 function LoadingScreen() {
+  const theme = useTheme();
   return (
     <View style={styles.loading}>
-      <ActivityIndicator size="large" color="white" />
+      <ActivityIndicator size="large" color={theme.colors.primary} />
     </View>
   );
 }

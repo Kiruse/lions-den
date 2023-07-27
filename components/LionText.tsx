@@ -1,9 +1,9 @@
-import { useMemo } from 'react'
+import { ReactNode, useMemo } from 'react'
 import { StyleProp, TextStyle } from 'react-native'
-import { Text, TextProps } from 'react-native-paper'
+import { Text } from 'react-native-paper'
 
 export interface LionTextProps {
-  children?: string;
+  children?: ReactNode;
   fontFamily?: string;
   fontSize?: number;
   textAlign?: TextStyle['textAlign'];

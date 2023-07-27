@@ -1,4 +1,4 @@
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
+import { Ionicons, MaterialIcons } from '@expo/vector-icons'
 import { Tabs } from 'expo-router'
 import * as Splash from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
@@ -62,11 +62,12 @@ export default function() {
           }}
         />
         <Tabs.Screen
-          name="proposals"
+          name="daos"
           options={{
-            href: '/proposals',
-            title: 'Props',
-            tabBarIcon: props => <MaterialCommunityIcons name="poll" {...props} />,
+            href: '/daos',
+            title: 'DAOs',
+            headerShown: false,
+            tabBarIcon: props => <MaterialIcons name="groups" {...props} />,
           }}
         />
         <Tabs.Screen
