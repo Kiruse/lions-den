@@ -1,21 +1,33 @@
-import styled from '@emotion/native'
+import styled, { css } from '@emotion/native'
 import Constants from 'expo-constants'
+import { useCallback } from 'react'
+import { Alert, View } from 'react-native'
+import { Switch, useTheme } from 'react-native-paper'
 import LionButton from '../components/LionButton'
-import LionText from '../components/LionText'
+import LionText, { LionTextProps } from '../components/LionText'
 import Screen from '../components/Screen'
-import { requestPushToken } from '../hooks/useNotifs'
+import useNotifs, { requestPushToken } from '../hooks/useNotifs'
+import tinycolor from 'tinycolor2'
 
 export default function Settings() {
+  const pushtoken = useNotifs();
+
+  const handleRequestPushToken = useCallback(async () => {
+    const pushtoken = await requestPushToken();
+    if (!pushtoken) Alert.alert('Oh no!', "Couldn't get the push token. You may need to enable notifications in your phone settings.");
+  }, []);
+
   return (
-    <Screen title="Settings" background={undefined} style={{ paddingHorizontal: 8, paddingVertical: 4 }}>
+    <Screen title="Settings" background={undefined} style={{ paddingVertical: 4 }}>
       <KVs>
         <KV>
           <Key italic>Version</Key>
           <Value italic>{Constants.expoConfig?.version || '?'}</Value>
         </KV>
-        <Btn mode="contained" onPress={requestPushToken}>
-          Register for Push Notifications
-        </Btn>
+        <KV even style={{ alignItems: 'center' }}>
+          <LionText style={{ flex: 1 }}>Enable push notifications</LionText>
+          <Switch value={!!pushtoken} onValueChange={handleRequestPushToken} />
+        </KV>
       </KVs>
     </Screen>
   )
@@ -28,10 +40,22 @@ const KVs = styled.View`
   gap: 4px;
 `
 
-const KV = styled.View`
-  flex-direction: row;
-  gap: 8px;
-`
+function KV({ even, style, ...props }: LionTextProps & { even?: boolean }) {
+  const theme = useTheme();
+  return (
+    <View
+      style={[css`
+        flex-direction: row;
+        gap: 8px;
+        background-color: ${even
+          ? tinycolor(theme.colors.background).darken(5).toRgbString()
+          : 'transparent'};
+        padding: 4px 8px;
+      `, style]}
+      {...props}
+    />
+  )
+}
 
 const Key = styled(LionText)`
   flex: 1;

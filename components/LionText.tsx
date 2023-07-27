@@ -16,7 +16,7 @@ export interface LionTextProps {
 export default function LionText({
   children,
   fontFamily,
-  fontSize,
+  fontSize = 16,
   textAlign,
   italic = false,
   bold = false,
@@ -37,5 +37,5 @@ export default function LionText({
 }
 
 export function LionTitle({ style, ...props }: LionTextProps) {
-  return <LionText fontSize={20} bold style={[{ marginBottom: 20 }, style]} {...props} />
+  return <LionText fontSize={24} bold style={[{ marginBottom: 20 }, style]} {...props} />
 }

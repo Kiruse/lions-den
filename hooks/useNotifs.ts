@@ -1,11 +1,10 @@
 import * as Device from 'expo-device'
 import * as Notifs from 'expo-notifications'
-import { useState } from 'react';
 import * as firestore from '../hooks/firebase/useFirestore'
 import useAsyncEffect from './useAsyncEffect'
+import { atom, getDefaultStore, useAtomValue } from 'jotai';
 
-// string (token) if granted, false if denied, null if undetermined
-let pushtoken: string | false | null = null;
+const tokenAtom = atom<string | false | null>(null);
 
 Notifs.setNotificationHandler({
   handleNotification: async () => ({
@@ -15,29 +14,30 @@ Notifs.setNotificationHandler({
   }),
 });
 
-export async function requestPushToken(): Promise<string | false> {
+export async function requestPushToken(askAnyway = false): Promise<string | false> {
   {
-    const { status } = await Notifs.getPermissionsAsync();
+    const { status, canAskAgain } = await Notifs.getPermissionsAsync();
     if (!Device.isDevice) return false; // cannot use push notifs on simulator/emulator
 
     switch (status) {
       case 'granted':
-        return pushtoken = await updatePushToken();
+        return await updatePushToken();
       case 'denied':
-        return pushtoken = false;
+        if (!askAnyway || !canAskAgain)
+          return false;
     }
   }
 
   {
     const { granted } = await Notifs.getPermissionsAsync();
-    if (!granted) return pushtoken = false;
-    return pushtoken = await updatePushToken();
+    if (!granted) return false;
+    return await updatePushToken();
   }
 }
 
 async function updatePushToken(): Promise<string> {
   const token = (await Notifs.getExpoPushTokenAsync()).data;
-  pushtoken = token;
+  getDefaultStore().set(tokenAtom, token);
   await firestore.updatePushToken(token);
   return token;
 }
@@ -47,10 +47,10 @@ async function updatePushToken(): Promise<string> {
  * you can still call `requestPushToken` from this module to ask again.
  */
 export default function useNotifs() {
-  const [token, setToken] = useState(pushtoken);
+  const token = useAtomValue(tokenAtom);
   useAsyncEffect(async () => {
-    if (pushtoken === null)
-      setToken(await requestPushToken());
+    if (getDefaultStore().get(tokenAtom) === null)
+      requestPushToken();
   }, []);
   return token;
 }
