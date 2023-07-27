@@ -1,9 +1,11 @@
 import { css } from '@emotion/native'
+import { LinearGradient } from 'expo-linear-gradient'
 import { router } from 'expo-router'
+import { TouchableRipple, useTheme } from 'react-native-paper'
+import tinycolor from 'tinycolor2'
 import LionText from '../../components/LionText'
 import Screen from '../../components/Screen'
 import constants from '../../misc/constants'
-import { TouchableRipple } from 'react-native-paper'
 
 export default function() {
   return (
@@ -19,14 +21,20 @@ interface DaoLinkProps {
   address: string;
 }
 function DaoLink({ children, address }: DaoLinkProps) {
+  const theme = useTheme();
   return (
-    <TouchableRipple
-      onPress={() => router.push(`/daos/${address}/proposals`)}
-      style={css`
-        padding: 8px;
-      `}
-    >
-      <LionText bold>{children}</LionText>
+    <TouchableRipple onPress={() => router.push(`/daos/${address}/proposals`)}>
+      <LinearGradient
+        colors={[
+          theme.colors.primary,
+          tinycolor(theme.colors.primary).darken(10).toRgbString(),
+        ]}
+        style={css`
+          padding: 8px;
+        `}
+      >
+        <LionText bold>{children}</LionText>
+      </LinearGradient>
     </TouchableRipple>
   )
 }

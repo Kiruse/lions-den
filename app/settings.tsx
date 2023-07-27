@@ -8,7 +8,7 @@ import { requestPushToken } from '../hooks/useNotifs'
 
 export default function Settings() {
   return (
-    <Screen title="Settings" style={{ paddingHorizontal: 8, paddingVertical: 4 }}>
+    <Screen title="Settings" background={undefined} style={{ paddingHorizontal: 8, paddingVertical: 4 }}>
       <KVs>
         <KV>
           <Key italic>Version</Key>

@@ -2,17 +2,18 @@ import { css } from '@emotion/native'
 import { useCallback, useState } from 'react'
 import { View } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
+import { ActivityIndicator, Divider, Surface, useTheme } from 'react-native-paper'
 import LionText, { LionTitle } from '../components/LionText'
 import RoarLogo from '../components/RoarLogo'
 import Screen from '../components/Screen'
+import { getNews } from '../hooks/firebase'
 import useAsyncEffect from '../hooks/useAsyncEffect'
 import { FirestoreDate, News } from '../misc/types'
-import { getNews } from '../hooks/firebase'
-import { Divider, Surface } from 'react-native-paper'
 import { fromFirestoreDate, isFirestoreDate } from '../misc/utils'
 
 export default function App() {
   const [data, setData] = useState<News[]>([]);
+  const theme = useTheme();
 
   const fetchNews = useCallback(async () => {
     setData(await getNews());
@@ -20,11 +21,12 @@ export default function App() {
   useAsyncEffect(fetchNews, []);
 
   return (
-    <Screen title="Lions' Den" style={{ padding: 8 }}>
+    <Screen title="Lions' Den" background={undefined} style={{ padding: 8 }}>
       <FlatList
         data={data}
         renderItem={({ item }) => <NewsItem item={item} />}
         ListHeaderComponent={Header}
+        ListEmptyComponent={<ActivityIndicator size="large" color={theme.colors.primary} />}
       />
     </Screen>
   )

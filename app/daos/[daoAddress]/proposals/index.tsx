@@ -6,11 +6,12 @@ import { Resource } from '../../../../hooks/useResource'
 import { PropData } from '../../../../misc/types'
 import { DAOSearchParams } from '../_types'
 import LionText, { LionTextProps } from '../../../../components/LionText'
-import { Surface as Paper, useTheme } from 'react-native-paper'
+import { Divider, Surface as Paper, useTheme } from 'react-native-paper'
 import styled, { css } from '@emotion/native'
 import { useCallback, useMemo, useState } from 'react'
 import { Pressable, View } from 'react-native'
 import Collapsible from 'react-native-collapsible'
+import { Chevron } from '../../../../components/Chevron'
 
 export default function() {
   const params = useLocalSearchParams<DAOSearchParams>();
@@ -26,8 +27,6 @@ export default function() {
 
 function Proposals({ res }: { res: Resource<PropData[]> }) {
   const data = useMemo(() => res.read().reverse(), [res]);
-  console.log(data);
-
   return (
     <FlatList
       data={data}
@@ -37,8 +36,8 @@ function Proposals({ res }: { res: Resource<PropData[]> }) {
 }
 
 function Proposal({ item }: { item: PropData }) {
-  const [collapsed, setCollapsed] = useState(true);
   const active = item.proposal.status === 'in_progress';
+  const [collapsed, setCollapsed] = useState(!active);
 
   const toggleCollapsed = useCallback(() => {
     setCollapsed(curr => !curr);
@@ -57,6 +56,15 @@ function Proposal({ item }: { item: PropData }) {
         <PropDesc collapsed={collapsed}>
           <LionText>{item.proposal.description.trim()}</LionText>
         </PropDesc>
+        <Divider />
+        <Chevron
+          orientation={collapsed ? 'down' : 'up'}
+          color="#666"
+          style={css`
+            align-self: center;
+            margin: 4px 0;
+          `}
+        />
       </Surface>
     </Pressable>
   )
@@ -88,12 +96,12 @@ const PropTitle = (props: LionTextProps) =>
   <LionText color="white" style={css`margin: 0;`} {...props} />
 function PropDesc({ children, collapsed }: { children: React.ReactNode, collapsed?: boolean }) {
   return (
-    <View style={css`
-      padding: 8px;
-    `}>
-      <Collapsible collapsed={collapsed}>
+    <Collapsible collapsed={collapsed}>
+      <View style={css`
+        padding: 8px;
+      `}>
         {children}
-      </Collapsible>
-    </View>
+      </View>
+    </Collapsible>
   )
 }

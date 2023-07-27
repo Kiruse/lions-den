@@ -3,11 +3,11 @@ import { Tabs } from 'expo-router'
 import * as Splash from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
 import React from 'react'
+import { MD3Theme, PaperProvider, MD3LightTheme } from 'react-native-paper'
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
+import tinycolor from 'tinycolor2'
 import { ping, useUser } from '../hooks/firebase';
-import { MD3Theme, PaperProvider, MD3LightTheme } from 'react-native-paper'
-import { View } from 'react-native'
 
 Splash.preventAutoHideAsync();
 enableScreens(true);
@@ -50,7 +50,7 @@ export default function() {
             paddingTop: 4,
           },
           tabBarActiveTintColor: theme.colors.onPrimary,
-          tabBarInactiveTintColor: '#5f0909',
+          tabBarInactiveTintColor: tinycolor(theme.colors.primary).darken(20).toRgbString(),
         }}
       >
         <Tabs.Screen

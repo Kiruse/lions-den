@@ -1,6 +1,6 @@
 import { css } from '@emotion/native'
-import { ComponentType, ReactNode, Suspense } from 'react'
-import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native'
+import { ReactNode, Suspense } from 'react'
+import { ImageBackground, ImageSourcePropType, StyleProp, StyleSheet, View, ViewStyle } from 'react-native'
 import { ActivityIndicator, useTheme } from 'react-native-paper'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { LionTitle } from './LionText'
@@ -8,17 +8,26 @@ import { LionTitle } from './LionText'
 export interface ScreenProps {
   children?: ReactNode;
   title?: ReactNode;
+  /** Background image to use. If present but undefined, no image will be used. Otherwise, semi-transparent Roar Logo will be used. */
+  background?: ImageSourcePropType;
   style?: StyleProp<ViewStyle>;
 }
 
-export default function Screen({ children, title, style }: ScreenProps) {
+export default function Screen({ children, title, style, ...props }: ScreenProps) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const topInset = insets.top + 2;
 
+  const image = 'background' in props ? props.background : require('../assets/background.png');
+
   // Jotai uses Suspense, so we wrap the whole screen in it
   return (
     <SafeAreaView edges={['left', 'right']} style={[styles.superContainer, { backgroundColor: theme.colors.background }]}>
+    <ImageBackground
+      source={image}
+      resizeMode="contain"
+      style={{ flex: 1 }}
+    >
     <Suspense fallback={<LoadingScreen />}>
       {typeof title === 'string' ? (
         <LionTitle
@@ -41,6 +50,7 @@ export default function Screen({ children, title, style }: ScreenProps) {
         {children}
       </View>
     </Suspense>
+    </ImageBackground>
     </SafeAreaView>
   )
 }
