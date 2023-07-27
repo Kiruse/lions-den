@@ -1,6 +1,5 @@
 import styled from '@emotion/native'
 import Constants from 'expo-constants'
-import * as Updates from 'expo-updates'
 import LionButton from '../components/LionButton'
 import LionText from '../components/LionText'
 import Screen from '../components/Screen'
@@ -12,7 +11,7 @@ export default function Settings() {
       <KVs>
         <KV>
           <Key italic>Version</Key>
-          <Value italic>{Updates.runtimeVersion || Constants.expoConfig?.version || '?'}</Value>
+          <Value italic>{Constants.expoConfig?.version || '?'}</Value>
         </KV>
         <Btn mode="contained" onPress={requestPushToken}>
           Register for Push Notifications
