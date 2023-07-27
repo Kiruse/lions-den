@@ -1,28 +1,77 @@
-import Screen from '../components/Screen'
+import { css } from '@emotion/native'
+import { useCallback, useState } from 'react'
+import { View } from 'react-native'
+import { FlatList } from 'react-native-gesture-handler'
 import LionText, { LionTitle } from '../components/LionText'
 import RoarLogo from '../components/RoarLogo'
-import { StyleSheet, View } from 'react-native'
+import Screen from '../components/Screen'
+import useAsyncEffect from '../hooks/useAsyncEffect'
+import { FirestoreDate, News } from '../misc/types'
+import { getNews } from '../hooks/firebase'
+import { Divider, Surface } from 'react-native-paper'
+import { fromFirestoreDate, isFirestoreDate } from '../misc/utils'
 
 export default function App() {
+  const [data, setData] = useState<News[]>([]);
+
+  const fetchNews = useCallback(async () => {
+    setData(await getNews());
+  }, []);
+  useAsyncEffect(fetchNews, []);
+
   return (
     <Screen title="Lions' Den" style={{ padding: 8 }}>
-      <RoarLogo size={256} style={{ alignSelf: 'center' }} />
-      <View style={styles.contentContainer}>
-        <LionTitle>Welcome to the Lions' Den!</LionTitle>
-        <LionText bold>This app is a work in progress.</LionText>
-        <LionText>
-          The Lions' Den mobile app is intended to become a hub of information for the Lions' Den
-          community aka the Pride. Here, we will feed you news on the Pride's latest projects &
-          campaigns, and especially notify you of new governance proposals.
-        </LionText>
-        <LionText>News & proposals will show up here, eventually. :)</LionText>
-      </View>
+      <FlatList
+        data={data}
+        renderItem={({ item }) => <NewsItem item={item} />}
+        ListHeaderComponent={Header}
+      />
     </Screen>
   )
 }
 
-const styles = StyleSheet.create({
-  contentContainer: {
-    flexGrow: 1,
-  },
-});
+function Header() {
+  return (
+    <View style={css`
+      flex-direction: column;
+      align-items: center;
+    `}>
+      <RoarLogo size={256} />
+      <LionTitle textAlign="center">Lion News</LionTitle>
+    </View>
+  )
+}
+
+interface NewsItemProps {
+  item: News;
+}
+
+function NewsItem({ item }: NewsItemProps) {
+  return (
+    <Surface style={css`
+      margin: 8px;
+      padding: 8px;
+    `}>
+      <View style={css`flex-direction: row; gap: 4px;`}>
+        {isFirestoreDate(item.date) && <LionText fontSize={12} color="#666">{getDateDisplay(item.date)}</LionText>}
+        {item.author && <LionText fontSize={12} color="#666" italic>by {item.author}</LionText>}
+      </View>
+      <LionTitle style={css`margin: 0 0 8px 0;`}>{item.title}</LionTitle>
+      <Divider style={css`margin-bottom: 8px;`} />
+      <View>
+        <LionText>{item.content}</LionText>
+      </View>
+    </Surface>
+  )
+}
+
+function getDateDisplay(raw: FirestoreDate) {
+  const date = fromFirestoreDate(raw);
+  return `${date.getDay()}. ${getMonthName(date.getMonth())} '${date.getFullYear().toString().slice(2)}`;
+}
+function getMonthName(month: number) {
+  return [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+  ][month];
+}

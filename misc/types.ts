@@ -1,4 +1,9 @@
 
+export type FirestoreDate = {
+  seconds: number;
+  nanoseconds: number;
+}
+
 /** Proposal data as returned by the proposal query */
 export type PropData = {
   proposal: Proposal;
@@ -30,3 +35,10 @@ export enum VoteType {
 export type Expiration = any; // TODO: there's 3 types of expiration
 
 export type ProposalAction = any; // not sure what this data is yet...
+
+export type News = {
+  title: string;
+  date: FirestoreDate;
+  content: string;
+  author: string;
+}
