@@ -13,7 +13,7 @@ export default function Settings() {
   const pushtoken = useNotifs();
 
   const handleRequestPushToken = useCallback(async () => {
-    const pushtoken = await requestPushToken();
+    const pushtoken = await requestPushToken(true);
     if (!pushtoken) Alert.alert('Oh no!', "Couldn't get the push token. You may need to enable notifications in your phone settings.");
   }, []);
 

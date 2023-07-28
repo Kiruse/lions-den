@@ -1,8 +1,10 @@
+import Constants from 'expo-constants'
 import * as Device from 'expo-device'
 import * as Notifs from 'expo-notifications'
 import * as firestore from '../hooks/firebase/useFirestore'
 import useAsyncEffect from './useAsyncEffect'
 import { atom, getDefaultStore, useAtomValue } from 'jotai';
+import { Platform } from 'react-native';
 
 const tokenAtom = atom<string | false | null>(null);
 
@@ -29,18 +31,33 @@ export async function requestPushToken(askAnyway = false): Promise<string | fals
   }
 
   {
-    const { granted } = await Notifs.getPermissionsAsync();
+    const { granted } = await Notifs.requestPermissionsAsync();
     if (!granted) return false;
     return await updatePushToken();
   }
 }
 
-async function updatePushToken(): Promise<string> {
-  const token = (await Notifs.getExpoPushTokenAsync()).data;
+async function updatePushToken(token?: string): Promise<string> {
+  if (!token) token = (await Notifs.getExpoPushTokenAsync({
+    projectId: Constants.expoConfig?.extra?.eas?.projectId,
+  })).data;
   getDefaultStore().set(tokenAtom, token);
   await firestore.updatePushToken(token);
+  if (Platform.OS === 'android') {
+    await Notifs.setNotificationChannelAsync('default', {
+      name: 'Default',
+      importance: Notifs.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
   return token;
 }
+
+// in case push token changes while live
+Notifs.addPushTokenListener(token => {
+  updatePushToken(token.data);
+});
 
 /**
  * Use notifications. Only works on devices. Only asks the user once for permission. When denied,

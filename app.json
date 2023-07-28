@@ -1,5 +1,11 @@
 {
   "plugins": [
+    [
+      "expo-notifications",
+      {
+        "icon": "./assets/push-icon.png"
+      }
+    ],
     "expo-router",
     "expo-updates"
   ],
@@ -26,6 +32,7 @@
     },
     "android": {
       "package": "dev.kiruse.lionsden",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/roar-logo.png",
         "backgroundColor": "#f3f410"

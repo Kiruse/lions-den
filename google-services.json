@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "941371144230",
+    "project_id": "lions-den-50d46",
+    "storage_bucket": "lions-den-50d46.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:941371144230:android:ff123285374c4fe9ec8ee7",
+        "android_client_info": {
+          "package_name": "dev.kiruse.lionsden"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "941371144230-cgef2uogmpcttqvkit8hveg5qev17mil.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAi02GKS6OFZ42JlHR-dZ8AFyxsb8yC90I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "941371144230-cgef2uogmpcttqvkit8hveg5qev17mil.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "941371144230-47es2i127127vs4o737ot2vck800afho.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "dev.kiruse.lionsden"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
