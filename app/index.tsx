@@ -21,7 +21,7 @@ export default function App() {
   useAsyncEffect(fetchNews, []);
 
   return (
-    <Screen title="Lions' Den" background={undefined} style={{ padding: 8 }}>
+    <Screen title="Lions of Terra" background={undefined} style={{ padding: 8 }}>
       <FlatList
         data={data}
         renderItem={({ item }) => <NewsItem item={item} />}
