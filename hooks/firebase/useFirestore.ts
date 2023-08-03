@@ -21,6 +21,14 @@ export async function updatePushToken(pushToken: string) {
   }, { merge: true });
 }
 
+export async function clearPushToken() {
+  const doc = getUserDoc();
+  if (!doc) return;
+  await db.setDoc(doc, {
+    pushToken: db.deleteField(),
+  }, { merge: true });
+}
+
 /** Get official news from the Firestore */
 export async function getNews(startAfter = new Date(), limit = 10): Promise<News[]> {
   const newsref = db.collection(firestore, 'news');

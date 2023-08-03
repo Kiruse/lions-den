@@ -8,14 +8,19 @@ import LionText, { LionTextProps } from '../components/LionText'
 import Screen from '../components/Screen'
 import useNotifs, { requestPushToken } from '../hooks/useNotifs'
 import tinycolor from 'tinycolor2'
+import { clearPushToken } from '../hooks/firebase'
 
 export default function Settings() {
   const pushtoken = useNotifs();
 
   const handleRequestPushToken = useCallback(async () => {
-    const pushtoken = await requestPushToken(true);
-    if (!pushtoken) Alert.alert('Oh no!', "Couldn't get the push token. You may need to enable notifications in your phone settings.");
-  }, []);
+    if (pushtoken) {
+      await clearPushToken();
+    } else {
+      const tok = await requestPushToken(true);
+      if (!tok) Alert.alert('Oh no!', "Couldn't get the push token. You may need to enable notifications in your phone settings.");
+    }
+  }, [pushtoken]);
 
   return (
     <Screen title="Settings" background={undefined} style={{ paddingVertical: 4 }}>
