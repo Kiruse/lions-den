@@ -59,7 +59,7 @@ function Proposal({ item }: { item: PropData }) {
         </View>
       </TitleBar>
       <PropVoteBar votes={item.results} collapsed={collapsed} />
-      <DetailsLink id={item.proposal.id} />
+      {/* <DetailsLink id={item.proposal.id} /> */}
       <PropDesc collapsed={collapsed}>
         <LionText>{item.proposal.description.trim()}</LionText>
       </PropDesc>
