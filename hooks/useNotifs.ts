@@ -1,10 +1,12 @@
-import Constants from 'expo-constants'
-import * as Device from 'expo-device'
-import * as Notifs from 'expo-notifications'
-import * as firestore from '../hooks/firebase/useFirestore'
-import useAsyncEffect from './useAsyncEffect'
-import { atom, getDefaultStore, useAtomValue } from 'jotai';
+import Constants from 'expo-constants';
+import * as Device from 'expo-device';
+import * as Notifs from 'expo-notifications';
+import { atom, getDefaultStore, useAtom } from 'jotai';
+import { useCallback } from 'react';
 import { Platform } from 'react-native';
+
+import * as firestore from '../hooks/firebase/useFirestore';
+import useAsyncEffect from './useAsyncEffect';
 
 const tokenAtom = atom<string | false | null>(null);
 
@@ -64,10 +66,14 @@ Notifs.addPushTokenListener(token => {
  * you can still call `requestPushToken` from this module to ask again.
  */
 export default function useNotifs() {
-  const token = useAtomValue(tokenAtom);
+  const [token, setToken] = useAtom(tokenAtom);
   useAsyncEffect(async () => {
     if (getDefaultStore().get(tokenAtom) === null)
       requestPushToken();
   }, []);
-  return token;
+  const clearToken = useCallback(async () => {
+    await firestore.clearPushToken();
+    setToken(false);
+  }, []);
+  return { token, clearToken };
 }
