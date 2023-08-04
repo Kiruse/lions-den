@@ -46,20 +46,20 @@ function Proposal({ item }: { item: PropData }) {
   }, []);
 
   return (
-    <Pressable onPress={toggleCollapsed}>
-      <Surface>
-        <TitleBar>
-          <PropID bold={active}>{item.proposal.id}:</PropID>
-          <View style={{ flex: 1 }}>
-            <PropTitle bold={active}>{item.proposal.title.trim()}</PropTitle>
-            <PropStatus status={item.proposal_status} />
-          </View>
-        </TitleBar>
-        <PropVoteBar votes={item.results} collapsed={collapsed} />
-        <PropDesc collapsed={collapsed}>
-          <LionText>{item.proposal.description.trim()}</LionText>
-        </PropDesc>
-        <Divider />
+    <Surface>
+      <TitleBar>
+        <PropID bold={active}>{item.proposal.id}:</PropID>
+        <View style={{ flex: 1 }}>
+          <PropTitle bold={active}>{item.proposal.title.trim()}</PropTitle>
+          <PropStatus status={item.proposal_status} />
+        </View>
+      </TitleBar>
+      <PropVoteBar votes={item.results} collapsed={collapsed} />
+      <PropDesc collapsed={collapsed}>
+        <LionText>{item.proposal.description.trim()}</LionText>
+      </PropDesc>
+      <Divider />
+      <Pressable onPress={toggleCollapsed}>
         <Chevron
           orientation={collapsed ? 'down' : 'up'}
           color="#666"
@@ -68,8 +68,8 @@ function Proposal({ item }: { item: PropData }) {
             margin: 4px 0;
           `}
         />
-      </Surface>
-    </Pressable>
+      </Pressable>
+    </Surface>
   )
 }
 
