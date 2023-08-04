@@ -1,19 +1,22 @@
-import { useLocalSearchParams } from 'expo-router'
-import { FlatList } from 'react-native-gesture-handler'
-import Screen from '../../../../components/Screen'
-import { useProposals } from '../../../../hooks/onchain/useProposals'
-import { Resource } from '../../../../hooks/useResource'
-import { PropData, Vote, VoteType } from '../../../../misc/types'
-import { DAOSearchParams } from '../_types'
-import LionText, { LionTextProps } from '../../../../components/LionText'
-import { Divider, Surface as Paper, useTheme } from 'react-native-paper'
-import styled, { css } from '@emotion/native'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { Pressable, View } from 'react-native'
-import Collapsible from 'react-native-collapsible'
-import { Chevron } from '../../../../components/Chevron'
-import tinycolor from 'tinycolor2'
-import { shortenBigNum } from '../../../../misc/utils'
+import { Link, useLocalSearchParams } from 'expo-router';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Pressable, View } from 'react-native';
+import Collapsible from 'react-native-collapsible';
+import { FlatList } from 'react-native-gesture-handler';
+import { Divider, Surface as Paper } from 'react-native-paper';
+import tinycolor from 'tinycolor2';
+
+import styled, { css } from '@emotion/native';
+
+import { Chevron } from '../../../../components/Chevron';
+import LionText, { LionTextProps } from '../../../../components/LionText';
+import Screen from '../../../../components/Screen';
+import { useProposals } from '../../../../hooks/onchain/useProposals';
+import { Resource } from '../../../../hooks/useResource';
+import { PropData, Vote } from '../../../../misc/types';
+import { shortenBigNum } from '../../../../misc/utils';
+import { DAOSearchParams } from '../_types';
+import useTheme from '../../../../hooks/useTheme';
 
 export default function() {
   const params = useLocalSearchParams<DAOSearchParams>();
@@ -38,6 +41,7 @@ function Proposals({ res }: { res: Resource<PropData[]> }) {
 }
 
 function Proposal({ item }: { item: PropData }) {
+  const { daoAddress } = useLocalSearchParams<DAOSearchParams>();
   const active = item.proposal.status === 'in_progress';
   const [collapsed, setCollapsed] = useState(!active);
 
@@ -55,6 +59,7 @@ function Proposal({ item }: { item: PropData }) {
         </View>
       </TitleBar>
       <PropVoteBar votes={item.results} collapsed={collapsed} />
+      <DetailsLink id={item.proposal.id} />
       <PropDesc collapsed={collapsed}>
         <LionText>{item.proposal.description.trim()}</LionText>
       </PropDesc>
@@ -246,4 +251,21 @@ function voteColor(vote: VoteLabel, isText = false) {
     case 'veto': return 'purple';
     case 'other': return 'grey';
   }
+}
+
+function DetailsLink({ id }: { id: number | string }) {
+  const { daoAddress } = useLocalSearchParams<DAOSearchParams>();
+  const theme = useTheme();
+  return (
+    <Link
+      href={`/daos/${daoAddress}/proposals/${id}`}
+      style={css`
+        flex-direction: row;
+        align-items: center;
+        padding: 4px 8px;
+      `}
+    >
+      <LionText color={theme.colors.grey[4]}>» Details</LionText>
+    </Link>
+  )
 }

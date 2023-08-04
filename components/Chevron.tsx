@@ -6,7 +6,7 @@ import { useTheme } from 'react-native-paper'
 type Orientation = 'up' | 'left' | 'down' | 'right' | number;
 
 export interface ChevronProps {
-  /** Orientation of the chevron. Can be up, left, right, down, or a counter-clockwise rotation in degrees. Defaults to up. */
+  /** Orientation of the chevron. Can be up, left, right, down, or a clockwise rotation in degrees. Defaults to up. */
   orientation?: Orientation;
   /** Size of the chevron. Defaults to 20. */
   size?: number;
@@ -47,11 +47,11 @@ function getOrientation(orientation: Orientation): number {
     case 'up':
       return 0;
     case 'left':
-      return 90;
+      return 270;
     case 'down':
       return 180;
     case 'right':
-      return 270;
+      return 90;
     default:
       return orientation;
   }

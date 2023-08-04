@@ -19,6 +19,8 @@ const theme: MD3Theme = {
     background: '#f3f410',
     primary: '#C53636',
     onPrimary: '#f3f410',
+    secondary: '#5f00cc',
+    onSecondary: '#ffffff',
   },
 }
 
