@@ -13,7 +13,7 @@
     "name": "Lions of Terra",
     "slug": "lions-den",
     "scheme": "lions-den",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "owner": "kiruse",
     "orientation": "portrait",
     "icon": "./assets/roar-logo.png",
