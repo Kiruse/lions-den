@@ -1,4 +1,4 @@
-import { Ionicons, MaterialIcons } from '@expo/vector-icons'
+import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons'
 import { Tabs } from 'expo-router'
 import * as Splash from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
@@ -8,6 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import tinycolor from 'tinycolor2'
 import { ping, useUser } from '../hooks/firebase';
+import LionSnackbars from '../components/LionSnackbars'
 
 Splash.preventAutoHideAsync();
 enableScreens(true);
@@ -73,6 +74,14 @@ export default function() {
           }}
         />
         <Tabs.Screen
+          name="account"
+          options={{
+            href: '/account',
+            title: 'Account',
+            tabBarIcon: props => <MaterialCommunityIcons name="account" {...props} />,
+          }}
+        />
+        <Tabs.Screen
           name="settings"
           options={{
             href: '/settings',
@@ -80,7 +89,14 @@ export default function() {
             tabBarIcon: props => <Ionicons name="settings-outline" {...props} />,
           }}
         />
+        <Tabs.Screen
+          name="post-login"
+          options={{
+            href: null,
+          }}
+        />
       </Tabs>
+      <LionSnackbars />
     </SafeAreaProvider>
     </PaperProvider>
   );

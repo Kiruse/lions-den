@@ -1,6 +1,6 @@
-import { ReactNode, useMemo } from 'react'
-import { StyleProp, TextStyle } from 'react-native'
-import { Text } from 'react-native-paper'
+import React, { ReactNode, useMemo } from 'react';
+import { StyleProp, TextStyle } from 'react-native';
+import { Text } from 'react-native-paper';
 
 export interface LionTextProps {
   children?: ReactNode;
@@ -39,3 +39,7 @@ export default function LionText({
 export function LionTitle({ style, ...props }: LionTextProps) {
   return <LionText fontSize={24} bold style={[{ marginBottom: 20 }, style]} {...props} />
 }
+
+export const bakeText = ({ style: _style, ..._props }: LionTextProps) => React.memo(
+  ({ style, ...props }: LionTextProps) => <LionText {..._props} {...props} style={[_style, style]} />
+);

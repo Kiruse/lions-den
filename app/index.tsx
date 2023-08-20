@@ -1,19 +1,25 @@
-import { css } from '@emotion/native'
-import { useCallback, useState } from 'react'
-import { View } from 'react-native'
-import { FlatList } from 'react-native-gesture-handler'
-import { ActivityIndicator, Divider, Surface, useTheme } from 'react-native-paper'
-import LionText, { LionTitle } from '../components/LionText'
-import RoarLogo from '../components/RoarLogo'
-import Screen from '../components/Screen'
-import { getNews } from '../hooks/firebase'
-import useAsyncEffect from '../hooks/useAsyncEffect'
-import { FirestoreDate, News } from '../misc/types'
-import { fromFirestoreDate, isFirestoreDate } from '../misc/utils'
+import * as Linking from 'expo-linking';
+import { useCallback, useState } from 'react';
+import { View } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
+import { ActivityIndicator, Divider, Surface, useTheme } from 'react-native-paper';
+
+import { css } from '@emotion/native';
+
+import LionButton from '../components/LionButton';
+import LionText, { LionTitle } from '../components/LionText';
+import RoarLogo from '../components/RoarLogo';
+import Screen from '../components/Screen';
+import { getNews } from '../hooks/firebase';
+import useAsyncEffect from '../hooks/useAsyncEffect';
+import { FirestoreDate, News } from '../misc/types';
+import { fromFirestoreDate, isFirestoreDate } from '../misc/utils';
+import { useToken } from '../stores/user';
 
 export default function App() {
   const [data, setData] = useState<News[]>([]);
   const theme = useTheme();
+  const token = useToken();
 
   const fetchNews = useCallback(async () => {
     setData(await getNews());
@@ -22,6 +28,18 @@ export default function App() {
 
   return (
     <Screen title="Lions of Terra" background={undefined} style={{ padding: 8 }}>
+      {token && (
+        <LionButton
+          onPress={() => {
+            Linking.openURL(
+              'https://cosmos-link.kiruse.dev/?redirect=' +
+              Linking.createURL('/post-login')
+            );
+          }}
+        >
+          Login
+        </LionButton>
+      )}
       <FlatList
         data={data}
         renderItem={({ item }) => <NewsItem item={item} />}

@@ -20,3 +20,12 @@ export function insertThousands(num: number | bigint | string) {
   out = num.slice(0, i + 3) + out;
   return out;
 }
+
+export const getBech32Prefix = (addr: string) => addr.split('1')[0];
+
+export function shortaddr(addr: string) {
+  if (!/^[a-z]+1/.test(addr)) return addr;
+  const prefix = getBech32Prefix(addr);
+  const remain = addr.slice(prefix.length);
+  return prefix + remain.slice(0, 6) + '...' + remain.slice(-6);
+}
