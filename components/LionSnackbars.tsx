@@ -6,6 +6,8 @@ import LionText from './LionText';
 export type SnackbarData = Omit<SnackbarProps, 'children' | 'visible' | 'onDismiss'> & {
   /** Mode of the snackbar. Determines appearance. Defaults to 'default'. */
   mode?: 'default' | 'info' | 'warn' | 'success' | 'error';
+  /** Title of the snackbar. */
+  title?: ReactNode;
   content: ReactNode;
   onDismiss?: SnackbarProps['onDismiss'];
 }
@@ -19,7 +21,7 @@ export default function LionSnackbars() {
   return (
     <Portal>
       {snackbars.map(self => {
-        // TODO: actually use mode to determine appearance
+        // TODO: actually style this shit
         const { id, mode, content, onDismiss, ...props } = self;
         return (
           <Snackbar

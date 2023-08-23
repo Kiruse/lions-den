@@ -1,4 +1,3 @@
-import { getToken } from '../stores/user';
 import { getCosmosLinkURL } from './helpers';
 
 export interface RequestOptions {
@@ -18,6 +17,7 @@ export interface RequestOptions {
    */
   expects?: 'text' | 'json' | 'response';
   /** The response body, if any. Invalid for GET requests. */
+  headers?: Record<string, string | undefined>;
   body?: any;
 }
 
@@ -27,21 +27,27 @@ export default async function request({
   url,
   type,
   expects,
+  headers = {},
   body,
 }: RequestOptions) {
   if (api === 'cosmos-link') url = getCosmosLinkURL(`api/${url}`);
 
-  const extraHeaders: any = {};
-  const token = await getToken();
-  if (token) extraHeaders['Authorization'] = `Bearer ${token}`;
+  const token = (global as any).token;
+  if (token && !headers['Authorization'])
+    headers['Authorization'] = `Bearer ${token}`;
 
   console.debug(`[request] ${method} ${url}`);
+
+  // filter headers with undefined values
+  headers = Object.fromEntries(
+    Object.entries(headers).filter(([_, v]) => v !== undefined)
+  );
 
   const response = await fetch(url, {
     method,
     headers: {
       'Content-Type': type === 'json' ? 'application/json' : 'text/plain',
-      ...extraHeaders,
+      ...headers,
     },
     body,
   });

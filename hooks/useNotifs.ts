@@ -5,7 +5,6 @@ import { atom, getDefaultStore, useAtom } from 'jotai';
 import { useCallback } from 'react';
 import { Platform } from 'react-native';
 
-import * as firestore from '../hooks/firebase/useFirestore';
 import useAsyncEffect from './useAsyncEffect';
 
 const tokenAtom = atom<string | false | null>(null);
@@ -44,7 +43,8 @@ async function updatePushToken(token?: string): Promise<string> {
     projectId: Constants.expoConfig?.extra?.eas?.projectId,
   })).data;
   getDefaultStore().set(tokenAtom, token);
-  await firestore.updatePushToken(token);
+  // TODO: update push token in mongodb atlas
+  // await firestore.updatePushToken(token);
   if (Platform.OS === 'android') {
     await Notifs.setNotificationChannelAsync('default', {
       name: 'Default',
@@ -72,8 +72,9 @@ export default function useNotifs() {
       requestPushToken();
   }, []);
   const clearToken = useCallback(async () => {
-    await firestore.clearPushToken();
-    setToken(false);
+    // TODO: clear push token in mongodb atlas
+    // await firestore.clearPushToken();
+    // setToken(false);
   }, []);
   return { token, clearToken };
 }

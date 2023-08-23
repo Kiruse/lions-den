@@ -11,10 +11,10 @@ import { snackbar } from '../components/LionSnackbars';
 import LionText, { bakeText } from '../components/LionText';
 import Screen from '../components/Screen';
 import Spacer from '../components/Spacer';
-import { getCosmosLinkURL, getJWTPayload } from '../misc/helpers';
+import { getCosmosLinkURL } from '../misc/helpers';
 import { shortaddr } from '../misc/utils';
 import {
-  login as _login, recover as _recover, setToken, useAddress, useToken
+  login as _login, recover as _recover, setToken, useToken, useUser, useUserType
 } from '../stores/user';
 
 const Text = bakeText({
@@ -22,9 +22,9 @@ const Text = bakeText({
 });
 
 export default function Account() {
-  const token = useToken();
+  const userType = useUserType();
 
-  if (!token) {
+  if (!userType || userType === 'anonymous') {
     return <LoginScreen />;
   } else {
     return <AccountScreen />;
@@ -105,13 +105,10 @@ function LoginScreen() {
 }
 
 function AccountScreen() {
-  const token = useToken();
-
-  const payload = token ? getJWTPayload(token) : {};
   const {
     type,
     address: addr,
-  } = payload;
+  } = useUser();
 
   return (
     <Screen title="Your Account" style={{ padding: 20 }}>

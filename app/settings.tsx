@@ -1,13 +1,16 @@
-import styled, { css } from '@emotion/native'
-import Constants from 'expo-constants'
-import { useCallback } from 'react'
-import { Alert, View } from 'react-native'
-import { Switch, useTheme } from 'react-native-paper'
-import LionButton from '../components/LionButton'
-import LionText, { LionTextProps } from '../components/LionText'
-import Screen from '../components/Screen'
-import useNotifs, { requestPushToken } from '../hooks/useNotifs'
-import tinycolor from 'tinycolor2'
+import Constants from 'expo-constants';
+import { useCallback } from 'react';
+import { Alert, View } from 'react-native';
+import { Switch, useTheme } from 'react-native-paper';
+import tinycolor from 'tinycolor2';
+
+import styled, { css } from '@emotion/native';
+
+import LionButton from '../components/LionButton';
+import LionText, { LionTextProps } from '../components/LionText';
+import Screen from '../components/Screen';
+import useNotifs, { requestPushToken } from '../hooks/useNotifs';
+import { snackbar } from '../components/LionSnackbars';
 
 export default function Settings() {
   const { token: pushtoken, clearToken } = useNotifs();
@@ -17,7 +20,13 @@ export default function Settings() {
       await clearToken();
     } else {
       const tok = await requestPushToken(true);
-      if (!tok) Alert.alert('Oh no!', "Couldn't get the push token. You may need to enable notifications in your phone settings.");
+      if (!tok) {
+        snackbar({
+          mode: 'error',
+          title: 'Oh no!',
+          content: 'Couldn\'t get the push token. You may need to manually enable notifications in your phone settings.',
+        });
+      }
     }
   }, [pushtoken]);
 

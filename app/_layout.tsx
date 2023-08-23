@@ -1,14 +1,16 @@
-import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons'
-import { Tabs } from 'expo-router'
-import * as Splash from 'expo-splash-screen'
-import { StatusBar } from 'expo-status-bar'
-import React from 'react'
-import { MD3Theme, PaperProvider, MD3LightTheme } from 'react-native-paper'
+import { Tabs } from 'expo-router';
+import * as Splash from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
+import React from 'react';
+import { MD3LightTheme, MD3Theme, PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
-import tinycolor from 'tinycolor2'
-import { ping, useUser } from '../hooks/firebase';
-import LionSnackbars from '../components/LionSnackbars'
+import tinycolor from 'tinycolor2';
+
+import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+
+import LionSnackbars from '../components/LionSnackbars';
+import { useToken } from '../stores/user';
 
 Splash.preventAutoHideAsync();
 enableScreens(true);
@@ -26,19 +28,14 @@ const theme: MD3Theme = {
 }
 
 export default function() {
-  const [isAppReady, setAppReady] = React.useState(true); // nothing to load yet
-  const user = useUser();
+  const token = useToken(); // token undefined is loading/initial
 
   React.useEffect(() => {
-    if (isAppReady)
+    if (token !== undefined)
       Splash.hideAsync();
-  }, [isAppReady]);
+  }, [token]);
 
-  React.useEffect(() => {
-    if (user) ping();
-  }, [user]);
-
-  if (!user || !isAppReady) return null;
+  if (token === undefined) return null;
   return (
     <PaperProvider theme={theme}>
     <SafeAreaProvider>
