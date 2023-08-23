@@ -1,18 +1,20 @@
 import * as Linking from 'expo-linking';
+import { useCallback, useState } from 'react';
+import { View } from 'react-native';
+import { TextInput } from 'react-native-paper';
 
 import styled from '@emotion/native';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import LionButton from '../components/LionButton';
+import { snackbar } from '../components/LionSnackbars';
 import LionText, { bakeText } from '../components/LionText';
 import Screen from '../components/Screen';
+import Spacer from '../components/Spacer';
+import * as userRequests from '../misc/requests.user';
 import { shortaddr } from '../misc/utils';
 import { setToken, useAddress, useToken } from '../stores/user';
-import { View } from 'react-native';
-import { TextInput } from 'react-native-paper';
-import { useCallback, useEffect, useState } from 'react';
-import { snackbar } from '../components/LionSnackbars';
-import Spacer from '../components/Spacer';
+import { getCosmosLinkURL } from '../misc/helpers';
 
 const Text = bakeText({
   textAlign: 'center',
@@ -20,10 +22,6 @@ const Text = bakeText({
 
 export default function Account() {
   const token = useToken();
-
-  useEffect(() => {
-    snackbar({ content: 'foobar' });
-  }, []);
 
   if (!token) {
     return <LoginScreen />;
@@ -41,27 +39,13 @@ function LoginScreen() {
     setLoading(true);
 
     try {
-      const response = await fetch('https://cosmos-link.kiruse.dev/api/recover', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'text/plain',
-        },
-        body: tokenID,
-      });
-      if (!response.ok) {
-        console.error(response);
-        snackbar({
-          content: `Login failed: ${response.status} ${response.statusText}`
-        });
-      } else {
-        const token = await response.text();
-        setToken(token);
-      }
+      const token = await userRequests.recover(tokenID);
+      await userRequests.login(token); // auto-sets token in store
     } catch (e: any) {
       console.error(e);
       snackbar({
         content: `An error occurred: ${e.message}`
-      })
+      });
     } finally {
       setLoading(false);
     }
@@ -79,8 +63,7 @@ function LoginScreen() {
             loading={loading}
             onPress={() => {
               Linking.openURL(
-                'https://cosmos-link.kiruse.dev/?redirect=' +
-                encodeURIComponent(Linking.createURL('/post-login'))
+                getCosmosLinkURL('/?redirect=' + encodeURIComponent(Linking.createURL('/post-login')))
               );
             }}
           >
@@ -121,7 +104,7 @@ function LoginScreen() {
 }
 
 function AccountScreen() {
-  const addr = useAddress();
+  const addr = useAddress() || '';
 
   return (
     <Screen title="Your Account" style={{ padding: 20 }}>
@@ -162,9 +145,4 @@ const Separator = styled.View`
   justify-content: center;
   align-items: center;
   margin: 8px 0;
-`
-
-const Row = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
 `

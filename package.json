@@ -3,10 +3,9 @@
   "version": "1.0.2",
   "main": "expo-router/entry",
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web"
+    "start": "dotenv expo start",
+    "android": "dotenv expo start --android",
+    "ios": "dotenv expo start --ios"
   },
   "dependencies": {
     "@emotion/native": "^11.11.0",
@@ -45,7 +44,8 @@
     "@babel/core": "^7.20.0",
     "@types/react-native-base64": "^0.2.0",
     "@types/tinycolor2": "^1.4.3",
-    "@types/utf8": "^3.0.1"
+    "@types/utf8": "^3.0.1",
+    "dotenv": "^16.3.1"
   },
   "private": true
 }

@@ -28,18 +28,6 @@ export default function App() {
 
   return (
     <Screen title="Lions of Terra" background={undefined} style={{ padding: 8 }}>
-      {token && (
-        <LionButton
-          onPress={() => {
-            Linking.openURL(
-              'https://cosmos-link.kiruse.dev/?redirect=' +
-              Linking.createURL('/post-login')
-            );
-          }}
-        >
-          Login
-        </LionButton>
-      )}
       <FlatList
         data={data}
         renderItem={({ item }) => <NewsItem item={item} />}

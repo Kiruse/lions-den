@@ -4,6 +4,8 @@ import { Portal, Snackbar, SnackbarProps } from 'react-native-paper';
 import LionText from './LionText';
 
 export type SnackbarData = Omit<SnackbarProps, 'children' | 'visible' | 'onDismiss'> & {
+  /** Mode of the snackbar. Determines appearance. Defaults to 'default'. */
+  mode?: 'default' | 'info' | 'warn' | 'success' | 'error';
   content: ReactNode;
   onDismiss?: SnackbarProps['onDismiss'];
 }
@@ -17,10 +19,11 @@ export default function LionSnackbars() {
   return (
     <Portal>
       {snackbars.map(self => {
-        const { content, onDismiss, ...props } = self;
+        // TODO: actually use mode to determine appearance
+        const { id, mode, content, onDismiss, ...props } = self;
         return (
           <Snackbar
-            key={(self as any).id + ''}
+            key={id}
             visible
             onDismiss={() => {
               setSnackbars((curr) => curr.filter(s => s !== self));
@@ -28,7 +31,7 @@ export default function LionSnackbars() {
             }}
             {...props}
           >
-            {typeof content === 'string' ? (
+            {typeof content !== 'object' ? (
               <LionText>{content}</LionText>
             ) : content}
           </Snackbar>
