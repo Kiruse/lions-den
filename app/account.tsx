@@ -11,10 +11,11 @@ import { snackbar } from '../components/LionSnackbars';
 import LionText, { bakeText } from '../components/LionText';
 import Screen from '../components/Screen';
 import Spacer from '../components/Spacer';
-import * as userRequests from '../misc/requests.user';
+import { getCosmosLinkURL, getJWTPayload } from '../misc/helpers';
 import { shortaddr } from '../misc/utils';
-import { setToken, useAddress, useToken } from '../stores/user';
-import { getCosmosLinkURL } from '../misc/helpers';
+import {
+  login as _login, recover as _recover, setToken, useAddress, useToken
+} from '../stores/user';
 
 const Text = bakeText({
   textAlign: 'center',
@@ -39,8 +40,8 @@ function LoginScreen() {
     setLoading(true);
 
     try {
-      const token = await userRequests.recover(tokenID);
-      await userRequests.login(token); // auto-sets token in store
+      const token = await _recover(tokenID);
+      await _login(token); // auto-sets token in store
     } catch (e: any) {
       console.error(e);
       snackbar({
@@ -104,17 +105,30 @@ function LoginScreen() {
 }
 
 function AccountScreen() {
-  const addr = useAddress() || '';
+  const token = useToken();
+
+  const payload = token ? getJWTPayload(token) : {};
+  const {
+    type,
+    address: addr,
+  } = payload;
 
   return (
     <Screen title="Your Account" style={{ padding: 20 }}>
       <View style={{ flex: 1 }}>
-        <LionText textAlign="center">
-          Logged in as <LionText italic>{shortaddr(addr)}</LionText>
-        </LionText>
+        {type === 'wallet' ? (
+          <LionText textAlign="center">
+            Logged in as <LionText italic>{shortaddr(addr)}</LionText>
+          </LionText>
+        ) : (
+          <LionText textAlign="center">
+            Logged in anonymously
+          </LionText>
+        )}
       </View>
       <LionButton
         mode="elevated"
+        disabled={type === 'anonymous'}
         icon={props => <MaterialIcons name="logout" {...props} />}
         onPress={() => {
           setToken(null);
