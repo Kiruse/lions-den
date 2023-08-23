@@ -1,12 +1,40 @@
 import { atom, getDefaultStore, useAtomValue } from 'jotai';
-import { atomWithStorage, createJSONStorage } from 'jotai/utils';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { snackbar } from '../components/LionSnackbars';
 import { getJWTPayload } from '../misc/helpers';
+import request from '../misc/requests';
 
-const storage = createJSONStorage<string | null>(() => AsyncStorage);
-const tokenAtom = atomWithStorage<string | null>('token', null, storage);
+// baseAtom is undefined if initial, null if failed, or JWT string if logged in (inc. anonymously)
+const baseAtom = atom<string | null | undefined>(null);
+
+// tokenAtom wraps baseAtom and persists to AsyncStorage
+const tokenAtom = atom(
+  (get) => get(baseAtom),
+  async (_get, set, value: string | null) => {
+    (global as any).token = value; // should ONLY EVER be used for requests.ts
+    await Promise.all([
+      set(baseAtom, value),
+      value
+        ? AsyncStorage.setItem('token', value || '')
+        : AsyncStorage.removeItem('token'),
+    ]);
+  },
+)
+
+// restore session or log in anonymously upon startup
+AsyncStorage.getItem('token').then(async token => {
+  if (!token) {
+    token = (await loginAnonymously()) || null;
+  } else {
+    // TODO: refresh existing tokens
+  }
+
+  // set even if null, indicating failure
+  await getDefaultStore().set(tokenAtom, token);
+});
+
 const addressAtom = atom(
   async (get): Promise<string | undefined> => {
     const token = await get(tokenAtom);
@@ -28,4 +56,80 @@ export async function setToken(value: string | null) {
 }
 export async function getToken() {
   return await getDefaultStore().get(tokenAtom);
+}
+
+async function loginAnonymously(): Promise<string | undefined> {
+  try {
+    const token = await request({
+      method: 'GET',
+      api: 'cosmos-link',
+      url: 'v1/login?type=anonymous',
+      expects: 'text',
+    });
+    return token;
+  } catch (err) {
+    console.error('Failed to login anonymously:', err);
+    snackbar({
+      mode: 'error',
+      title: 'Login Error',
+      content: 'Failed to login anonymously. Please make sure you are connected to the internet and try again.',
+    });
+  }
+}
+
+export async function login(token: string) {
+  // if we have an existing anonymous token, upgrade it. otherwise just log in.
+  const existingToken = await getToken();
+
+  const type = existingToken ? getJWTPayload(existingToken)?.type : null;
+  if (type === 'anonymous')
+    return await _upgrade(token);
+  return await _login(token);
+}
+
+async function _login(token: string) {
+  try {
+    await request({
+      method: 'POST',
+      api: 'cosmos-link',
+      url: 'v1/login',
+      body: token,
+    });
+    await setToken(token);
+  } catch (err: any) {
+    console.error('Failed to login:', err);
+    snackbar({
+      mode: 'error',
+      content: 'Failed to login: ' + err.message || 'Unknown error',
+    });
+  }
+}
+
+async function _upgrade(token: string) {
+  try {
+    await request({
+      method: 'POST',
+      api: 'cosmos-link',
+      url: 'v1/upgrade',
+      body: token,
+    });
+    await setToken(token);
+  } catch (err: any) {
+    console.error('Failed to upgrade user:', err);
+    snackbar({
+      mode: 'error',
+      content: 'Failed to upgrade account: ' + err.message || 'Unknown error',
+    });
+  }
+}
+
+export async function recover(tokenID: string) {
+  return await request({
+    method: 'POST',
+    api: 'cosmos-link',
+    url: 'v1/recover',
+    type: 'text',
+    expects: 'text',
+    body: tokenID,
+  });
 }
