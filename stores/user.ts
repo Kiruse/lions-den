@@ -6,6 +6,8 @@ import { snackbar } from '../components/LionSnackbars';
 import { getJWTPayload } from '../misc/helpers';
 import request from '../misc/requests';
 
+export type UserType = 'anonymous' | 'wallet';
+
 // baseAtom is undefined if initial, null if failed, or JWT string if logged in (inc. anonymously)
 const baseAtom = atom<string | null | undefined>(null);
 
@@ -35,12 +37,12 @@ AsyncStorage.getItem('token').then(async token => {
   await getDefaultStore().set(tokenAtom, token);
 });
 
-const addressAtom = atom(
-  async (get): Promise<string | undefined> => {
+const payloadAtom = atom(
+  async (get) => {
     const token = await get(tokenAtom);
     if (!token) return;
     try {
-      return (getJWTPayload(token) || {}).address;
+      return getJWTPayload(token);
     } catch (err) {
       console.error("Failed to parse token:", err);
       return;
@@ -48,8 +50,18 @@ const addressAtom = atom(
   }
 )
 
+const addressAtom = atom(
+  async (get) => (await get(payloadAtom) || {}).address as string | undefined
+)
+
+const typeAtom = atom(
+  async (get) => (await get(payloadAtom) || {}).type as UserType | undefined
+)
+
 export const useToken = () => useAtomValue(tokenAtom);
+export const useUser = () => useAtomValue(payloadAtom);
 export const useAddress = () => useAtomValue(addressAtom);
+export const useUserType = () => useAtomValue(typeAtom);
 
 export async function setToken(value: string | null) {
   await getDefaultStore().set(tokenAtom, value);
