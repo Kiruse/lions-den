@@ -30,7 +30,8 @@ AsyncStorage.getItem('token').then(async token => {
   if (!token) {
     token = (await loginAnonymously()) || null;
   } else {
-    // TODO: refresh existing tokens
+    const tmp = await refresh(token);
+    if (tmp) token = tmp;
   }
 
   // set even if null, indicating failure
@@ -144,4 +145,22 @@ export async function recover(tokenID: string) {
     expects: 'text',
     body: tokenID,
   });
+}
+
+// refresh using the original token. server may or may not respond with a new token or simply return
+// the old token.
+async function refresh(token: string) {
+  try {
+    return await request({
+      method: 'POST',
+      api: 'cosmos-link',
+      url: 'v1/refresh',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      expects: 'text',
+    }) as string;
+  } catch (err) {
+    console.error('Failed to refresh token:', err);
+  }
 }
