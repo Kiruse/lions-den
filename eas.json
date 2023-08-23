@@ -9,20 +9,20 @@
       "distribution": "internal",
       "channel": "development",
       "env": {
-        "COSMOS_LINK_URL": "http://localhost:3000/api/v1/"
+        "COSMOS_LINK_URL": "http://localhost:3000/"
       }
     },
     "preview": {
       "distribution": "internal",
       "channel": "preview",
       "env": {
-        "COSMOS_LINK_URL": "https://cosmos-link.kiruse.dev/api/v1/"
+        "COSMOS_LINK_URL": "https://cosmos-link.kiruse.dev/"
       }
     },
     "production": {
       "channel": "production",
       "env": {
-        "COSMOS_LINK_URL": "https://cosmos-link.kiruse.dev/api/v1/"
+        "COSMOS_LINK_URL": "https://cosmos-link.kiruse.dev/"
       }
     }
   },
