@@ -1,6 +1,6 @@
 import Constants from 'expo-constants';
 import { useCallback } from 'react';
-import { Alert, View } from 'react-native';
+import { View } from 'react-native';
 import { Switch, useTheme } from 'react-native-paper';
 import tinycolor from 'tinycolor2';
 
@@ -17,9 +17,10 @@ export default function Settings() {
 
   const handleRequestPushToken = useCallback(async () => {
     if (pushtoken) {
+      console.log('clearing token');
       await clearToken();
     } else {
-      const tok = await requestPushToken(true);
+      const tok = await requestPushToken();
       if (!tok) {
         snackbar({
           mode: 'error',

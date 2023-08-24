@@ -25,7 +25,7 @@ export default async function request({
   method,
   api,
   url,
-  type,
+  type = 'text',
   expects,
   headers = {},
   body,
@@ -49,7 +49,7 @@ export default async function request({
       'Content-Type': type === 'json' ? 'application/json' : 'text/plain',
       ...headers,
     },
-    body,
+    body: type === 'json' ? JSON.stringify(body) : body,
   });
 
   if (expects === 'response') return response;

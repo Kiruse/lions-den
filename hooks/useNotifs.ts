@@ -6,6 +6,7 @@ import { useCallback } from 'react';
 import { Platform } from 'react-native';
 
 import useAsyncEffect from './useAsyncEffect';
+import { clearPushToken, setPushToken } from '../misc/api';
 
 const tokenAtom = atom<string | false | null>(null);
 
@@ -17,17 +18,17 @@ Notifs.setNotificationHandler({
   }),
 });
 
-export async function requestPushToken(askAnyway = false): Promise<string | false> {
+export async function requestPushToken(): Promise<string | false> {
   {
     const { status, canAskAgain } = await Notifs.getPermissionsAsync();
     if (!Device.isDevice) return false; // cannot use push notifs on simulator/emulator
 
     switch (status) {
-      case 'granted':
-        return await updatePushToken();
-      case 'denied':
-        if (!askAnyway || !canAskAgain)
-          return false;
+    case 'granted':
+      return await updatePushToken();
+    case 'denied':
+      if (!canAskAgain)
+        return false;
     }
   }
 
@@ -38,13 +39,17 @@ export async function requestPushToken(askAnyway = false): Promise<string | fals
   }
 }
 
-async function updatePushToken(token?: string): Promise<string> {
+async function updatePushToken(token?: string): Promise<string | false> {
   if (!token) token = (await Notifs.getExpoPushTokenAsync({
     projectId: Constants.expoConfig?.extra?.eas?.projectId,
   })).data;
+
   getDefaultStore().set(tokenAtom, token);
-  // TODO: update push token in mongodb atlas
-  // await firestore.updatePushToken(token);
+  if (!await setPushToken(token)) {
+    getDefaultStore().set(tokenAtom, null);
+    return false;
+  }
+
   if (Platform.OS === 'android') {
     await Notifs.setNotificationChannelAsync('default', {
       name: 'Default',
@@ -55,11 +60,6 @@ async function updatePushToken(token?: string): Promise<string> {
   }
   return token;
 }
-
-// in case push token changes while live
-Notifs.addPushTokenListener(token => {
-  updatePushToken(token.data);
-});
 
 /**
  * Use notifications. Only works on devices. Only asks the user once for permission. When denied,
@@ -72,9 +72,9 @@ export default function useNotifs() {
       requestPushToken();
   }, []);
   const clearToken = useCallback(async () => {
-    // TODO: clear push token in mongodb atlas
-    // await firestore.clearPushToken();
-    // setToken(false);
-  }, []);
+    if (!token) return;
+    setToken(false);
+    if (!await clearPushToken(token)) setToken(token);
+  }, [token]);
   return { token, clearToken };
 }
