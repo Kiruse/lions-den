@@ -164,3 +164,8 @@ async function refresh(token: string) {
     console.error('Failed to refresh token:', err);
   }
 }
+
+export async function logout() {
+  const token = await loginAnonymously();
+  await setToken(token || null);
+}

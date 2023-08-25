@@ -11,6 +11,8 @@ import LionText, { LionTextProps } from '../components/LionText';
 import Screen from '../components/Screen';
 import useNotifs, { requestPushToken } from '../hooks/useNotifs';
 import { snackbar } from '../components/LionSnackbars';
+import Spacer from '../components/Spacer';
+import { setToken } from '../stores/user';
 
 export default function Settings() {
   const { token: pushtoken, clearToken } = useNotifs();
@@ -42,6 +44,21 @@ export default function Settings() {
           <LionText style={{ flex: 1 }}>Enable push notifications</LionText>
           <Switch value={!!pushtoken} onValueChange={handleRequestPushToken} />
         </KV>
+        <Spacer size={12} />
+        <LionText textAlign='center' italic bold>
+          Advanced Settings
+        </LionText>
+        <LionText style={{ marginHorizontal: 4 }}>
+          You shouldn't touch these settings unless you know what you're doing or are instructed to
+          do so by the developer(s).
+        </LionText>
+        <LionButton
+          mode='contained'
+          onPress={() => {setToken(null)}}
+          style={{ marginHorizontal: 4 }}
+        >
+          Reset token
+        </LionButton>
       </KVs>
     </Screen>
   )

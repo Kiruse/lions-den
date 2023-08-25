@@ -14,7 +14,7 @@ import Spacer from '../components/Spacer';
 import { getCosmosLinkURL } from '../misc/helpers';
 import { shortaddr } from '../misc/utils';
 import {
-  login as _login, recover as _recover, setToken, useToken, useUser, useUserType
+  login as _login, logout, recover as _recover, useUser, useUserType
 } from '../stores/user';
 
 const Text = bakeText({
@@ -127,9 +127,7 @@ function AccountScreen() {
         mode="elevated"
         disabled={type === 'anonymous'}
         icon={props => <MaterialIcons name="logout" {...props} />}
-        onPress={() => {
-          setToken(null);
-        }}
+        onPress={() => {logout()}}
       >
         Logout
       </LionButton>
