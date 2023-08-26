@@ -16,4 +16,5 @@ const cfg: Record<string, Config> = {
   },
 }
 
-export default cfg[Updates.channel || 'production'];
+// in production, remove any trailing version number from the channel name
+export default cfg[Updates.channel?.replace(/\/v.*$/, '') || 'production'];
