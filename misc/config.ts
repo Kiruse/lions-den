@@ -1,12 +1,14 @@
 import * as Updates from 'expo-updates'
 
+const LOCALHOST = '192.168.178.20';
+
 interface Config {
   cosmosLinkUri: string;
 }
 
 const cfg: Record<string, Config> = {
   development: {
-    cosmosLinkUri: 'http://localhost:3000/',
+    cosmosLinkUri: `http://${LOCALHOST}:3000/`,
   },
   preview: {
     cosmosLinkUri: 'https://cosmos-link.kiruse.dev/',
@@ -17,4 +19,4 @@ const cfg: Record<string, Config> = {
 }
 
 // in production, remove any trailing version number from the channel name
-export default cfg[Updates.channel?.replace(/\/v.*$/, '') || 'production'];
+export default cfg[Updates.channel?.replace(/\/v.*$/, '') || 'development'];

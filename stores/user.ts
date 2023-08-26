@@ -96,8 +96,9 @@ export async function login(token: string) {
 
   const type = existingToken ? getJWTPayload(existingToken)?.type : null;
   if (type === 'anonymous')
-    return await _upgrade(token);
-  return await _login(token);
+    await _upgrade(token);
+  else
+    await _login(token);
 }
 
 async function _login(token: string) {
@@ -120,13 +121,13 @@ async function _login(token: string) {
 
 async function _upgrade(token: string) {
   try {
-    await request({
+    const newtok = await request({
       method: 'POST',
       api: 'cosmos-link',
       url: 'v1/upgrade',
       body: token,
     });
-    await setToken(token);
+    await setToken(newtok);
   } catch (err: any) {
     console.error('Failed to upgrade user:', err);
     snackbar({
